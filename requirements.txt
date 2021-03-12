@@ -1,0 +1,6 @@
+opencv-python==4.2.0.32
+pandas==1.0.2
+numpy==1.18.1
+matplotlib==3.2.1
+pytesseract==0.3.7
+Pillow==7.1.1
