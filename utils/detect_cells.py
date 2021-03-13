@@ -23,8 +23,7 @@ def sort_contours(cnts, method='left-to-right'):
     # construct the list of bounding boxes and sort them from top to
     # bottom
     boundingBoxes = [cv2.boundingRect(c) for c in cnts]
-    (cnts, boundingBoxes) = zip(*sorted(zip(cnts, boundingBoxes),
-                                key=lambda b: b[1][i], reverse=reverse))
+    (cnts, boundingBoxes) = zip(*sorted(zip(cnts, boundingBoxes), key=lambda b: b[1][i], reverse=reverse))
 
     # return the list of sorted contours and bounding boxes
     return (cnts, boundingBoxes)
@@ -35,12 +34,10 @@ def detect_cells(image, image_vh):
     bitnot = cv2.bitwise_not(bitxor)
 
     # Detect contours for following box detection
-    (contours, hierarchy) = cv2.findContours(image_vh, cv2.RETR_TREE,
-            cv2.CHAIN_APPROX_SIMPLE)
+    (contours, hierarchy) = cv2.findContours(image_vh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     # Sort all the contours by top to bottom.
-    (contours, boundingBoxes) = sort_contours(contours,
-            method='top-to-bottom')
+    (contours, boundingBoxes) = sort_contours(contours, method='top-to-bottom')
 
     # Creating a list of heights for all detected boxes
     heights = [boundingBoxes[i][3] for i in range(len(boundingBoxes))]
@@ -55,8 +52,7 @@ def detect_cells(image, image_vh):
     for c in contours:
         (x, y, w, h) = cv2.boundingRect(c)
         if w < 1000 and h < 500:
-            image = cv2.rectangle(image, (x, y), (x + w, y + h), (0,
-                                  255, 0), 2)
+            image = cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
             box.append([x, y, w, h])
 
     # Creating a list of heights for all detected boxes
@@ -72,8 +68,7 @@ def detect_cells(image, image_vh):
     for c in contours:
         (x, y, w, h) = cv2.boundingRect(c)
         if w < 1000 and h < 500:
-            image = cv2.rectangle(image, (x, y), (x + w, y + h), (0,
-                                  255, 0), 2)
+            image = cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
             box.append([x, y, w, h])
 
     # Creating two lists to define row and column in which cell is located
@@ -97,6 +92,7 @@ def detect_cells(image, image_vh):
                 column = []
                 previous = box[i]
                 column.append(box[i])
+    
 
     # calculating maximum number of cells
     countcol = 0
@@ -104,10 +100,13 @@ def detect_cells(image, image_vh):
         countcol = len(row[i])
         if countcol > countcol:
             countcol = countcol
+    count_rows = len(row)
+    countcol_cal = round(len(box)/count_rows)
+    if countcol != 5:
+        countcol = countcol_cal
 
     # Retrieving the center of each column
-    center = [int(row[i][j][0] + row[i][j][2] / 2) for j in
-              range(len(row[i])) if row[0]]
+    center = [int(row[i][j][0] + row[i][j][2] / 2) for j in range(len(row[i])) if row[0]]
     center = np.array(center)
     center.sort()
 
@@ -124,4 +123,4 @@ def detect_cells(image, image_vh):
             lis[indexing].append(row[i][j])
         finalboxes.append(lis)
 
-    return (finalboxes, bitnot, countcol)
+    return (finalboxes, bitnot, countcol, count_rows)

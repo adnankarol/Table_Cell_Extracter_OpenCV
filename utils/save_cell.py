@@ -13,7 +13,10 @@ def check_empty_image(finalimage):
         retval, threshold = cv2.threshold(image,127,255,cv2.THRESH_BINARY)
 
         text = pytesseract.image_to_string(threshold)
-        if len(text) > 1:
+        text_check = text.lower()
+        text_check = text_check.islower()
+        
+        if len(text) > 1 and text_check == True:
             return 1
         else :
             print("Passed")
@@ -23,7 +26,7 @@ def check_empty_image(finalimage):
         return 1
 
 
-def save_cell(finalboxes, bitnot, countcol, filepath):
+def save_cell(finalboxes, bitnot, countcol, count_rows, filepath):
     outer = []
     row_nr = 0
     column_nr = 0
@@ -53,7 +56,7 @@ def save_cell(finalboxes, bitnot, countcol, filepath):
                         empty_status = check_empty_image(finalimage)
                         if empty_status == 1:
                             cv2.imwrite(img=finalimage, filename=file_to_be_saved)
-                        column_nr = column_nr + 1
+                        column_nr = column_nr + 1                 
         return 1
     except:
         return -1

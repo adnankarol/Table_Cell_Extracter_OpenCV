@@ -5,8 +5,8 @@ Implementation of Cell Extractor from Images of Tables.
 # Table of Contents
 1. [ To Run. ](#Using)
 2. [ Output. ](#Output)
-3. [ Future Scope. ](#Future_scope)
-4. [ Additional Packages. ](#Packages) 
+3. [ Additional Packages. ](#Packages) 
+4. [ Future Scope. ](#Future_scope)
 5. [ Additional Information. ](#info)
 
 <a name="using"></a>
@@ -16,7 +16,11 @@ Implementation of Cell Extractor from Images of Tables.
 
 2.  Run the command   
 
+    `pip install -r requirements.txt`  
+
     `python extract_cells.py`
+
+3. In order to make path or any related change, please change the `config.yaml` file. 
 
 
 <a name="Output"></a>
@@ -31,12 +35,6 @@ Example Output Format
 
         results\0\cell_0_2.png
 
-<a name="Future_scope"></a>
-# Future Scope
-
-1. Use of OCR system to extract data from these image using some packages like tesseract from python.
-
-2. Using AI and Deep Learning to convert the image data to text.
 
 <a name="Packages"></a>
 # Additional Packages
@@ -58,6 +56,13 @@ In order to NOT add empty cells, the program uses package called `pytesseract` f
 6. Hooray!! Now we have OCR package confirmed. 
 
 NOTE : Without `tesseract.exe` empty cells will also be saved by default.
+
+<a name="Future_scope"></a>
+# Future Scope
+
+1. Use of OCR system to extract data from these image using some packages like tesseract from python.
+
+2. Using AI and Deep Learning to convert the image data to text.
 
 <a name="info"></a>
 # Additional Information

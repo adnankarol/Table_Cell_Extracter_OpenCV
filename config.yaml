@@ -1,0 +1,5 @@
+preprocess_paramaters:
+      flag: 0
+
+paths:
+      path_to_process: "tables/*.png"
