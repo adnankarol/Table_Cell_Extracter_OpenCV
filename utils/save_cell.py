@@ -1,4 +1,4 @@
-# Module to Save detected cellss
+# Module to Save detected cells
 import pytesseract
 from PIL import Image
 import cv2
