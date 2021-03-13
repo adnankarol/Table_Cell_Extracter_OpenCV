@@ -3,3 +3,8 @@ preprocess_paramaters:
 
 paths:
       path_to_process: "tables/*.png"
+
+pytesseract:
+      lang: 'eng'
+      config: '--psm 6'
+

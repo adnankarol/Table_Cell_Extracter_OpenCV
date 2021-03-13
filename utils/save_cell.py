@@ -4,32 +4,40 @@ from PIL import Image
 import cv2
 import numpy as np
 import os
+from PIL import Image, ImageEnhance, ImageFilter
 
 # Function to Check if Image/Cell is Empty
-def check_empty_image(finalimage):
+def check_empty_image(finalimage ,lang, config_tesseract):
     try:
-        #im = cv2.imread(finalimage)
+
         image = cv2.resize(finalimage, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
         retval, threshold = cv2.threshold(image,127,255,cv2.THRESH_BINARY)
+        blur = cv2.GaussianBlur(threshold, (3,3), 0)
+        thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
 
-        text = pytesseract.image_to_string(threshold)
+        # Morph open to remove noise and invert image
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
+        opening = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel, iterations=1)
+        invert = 255 - opening
+
+        text = pytesseract.image_to_string(invert, lang = lang, config = config_tesseract)
         text_check = text.lower()
         text_check = text_check.islower()
         
         if len(text) > 1 and text_check == True:
             return 1
         else :
-            print("Passed")
             return 0
     except:
-        print("Skipped")
         return 1
 
 
-def save_cell(finalboxes, bitnot, countcol, count_rows, filepath):
+def save_cell(finalboxes, bitnot, countcol, count_rows, filepath, lang, config_tesseract):
     outer = []
     row_nr = 0
     column_nr = 0
+    lang = lang
+    config_tesseract = config_tesseract
 
     try:
         for i in range(len(finalboxes)):
@@ -50,10 +58,10 @@ def save_cell(finalboxes, bitnot, countcol, count_rows, filepath):
 
                         Folder_Path = 'results/' + filepath.split('\\')[-1].split('.')[0]
                         if not os.path.exists(Folder_Path):
-                            print(' Creating Results Folder : ', Folder_Path)
+                            print('Creating Results Folder : ', Folder_Path)
                             os.makedirs(Folder_Path)
                         file_to_be_saved = Folder_Path + '/' + 'cell_' + str(row_nr) + '_' + str(column_nr) + '.png'
-                        empty_status = check_empty_image(finalimage)
+                        empty_status = check_empty_image(finalimage, lang, config_tesseract)
                         if empty_status == 1:
                             cv2.imwrite(img=finalimage, filename=file_to_be_saved)
                         column_nr = column_nr + 1                 

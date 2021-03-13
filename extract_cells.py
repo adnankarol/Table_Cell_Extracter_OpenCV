@@ -63,7 +63,7 @@ class TableAnalysis:
     """
     def write_results(self,finalboxes, bitnot, countcol, count_rows, filepath):
         
-        status = save_cell(finalboxes, bitnot, countcol, count_rows, filepath)
+        status = save_cell(finalboxes, bitnot, countcol, count_rows, filepath, lang, config_tesseract)
         if status != 1:
             return -1
         else :
@@ -81,12 +81,15 @@ return :
 """
 def config_params():
     global flag, path_to_process
+    global lang, config_tesseract
 
     with open(path_to_config_file, "r") as ymlfile:
         cfg = yaml.safe_load(ymlfile)
     
     flag = cfg["preprocess_paramaters"]["flag"]
     path_to_process = cfg["paths"]["path_to_process"]
+    lang = cfg["pytesseract"]["lang"]
+    config_tesseract = cfg["pytesseract"]["config"]
 
 
 """ 
@@ -102,16 +105,16 @@ def main():
     table_analysis = TableAnalysis()
     
     for filepath in glob.glob(os.path.join(path_to_process)):
-        # try:
-            if filepath.split("\\")[-1].split(".")[0] == str(6):
-                finalboxes, bitnot, countcol, count_rows = table_analysis.process(filepath)
-                status = table_analysis.write_results(finalboxes, bitnot, countcol, count_rows, filepath)
-                if status != 1 :
-                    print("Possible Error! Kindly check Image.")
-                else:
-                        print("Image processes Succesfully")
-        # except :
-        #     print("Image Skipped : ", filepath)         
+        try:
+            #if filepath.split("\\")[-1].split(".")[0] == str(5):
+            finalboxes, bitnot, countcol, count_rows = table_analysis.process(filepath)
+            status = table_analysis.write_results(finalboxes, bitnot, countcol, count_rows, filepath)
+            if status != 1 :
+                print("Possible Error! Kindly check Image.")
+            else:
+                    print("Image Processed Succesfully")
+        except :
+            print("Image Skipped : ", filepath)         
 
 
 if __name__ == "__main__":
