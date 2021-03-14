@@ -7,7 +7,7 @@ import os
 from PIL import Image, ImageEnhance, ImageFilter
 
 # Function to Check if Image/Cell is Empty
-def check_empty_image(finalimage ,lang, config_tesseract):
+def check_empty_image(finalimage ,lang, config_tesseract, threshold_length_text):
     try:
 
         image = cv2.resize(finalimage, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
@@ -21,10 +21,9 @@ def check_empty_image(finalimage ,lang, config_tesseract):
         invert = 255 - opening
 
         text = pytesseract.image_to_string(invert, lang = lang, config = config_tesseract)
-        text_check = text.lower()
-        text_check = text_check.islower()
+        text = ''.join([i for i in text if i.isalpha()])
         
-        if len(text) > 1 and text_check == True:
+        if len(text) > threshold_length_text:
             return 1
         else :
             return 0
@@ -32,12 +31,13 @@ def check_empty_image(finalimage ,lang, config_tesseract):
         return 1
 
 
-def save_cell(finalboxes, bitnot, countcol, count_rows, filepath, lang, config_tesseract):
+def save_cell(finalboxes, bitnot, countcol, count_rows, filepath, lang, config_tesseract, threshold_length_text):
     outer = []
     row_nr = 0
     column_nr = 0
     lang = lang
     config_tesseract = config_tesseract
+    threshold_length_text = threshold_length_text
 
     try:
         for i in range(len(finalboxes)):
@@ -61,7 +61,7 @@ def save_cell(finalboxes, bitnot, countcol, count_rows, filepath, lang, config_t
                             print('Creating Results Folder : ', Folder_Path)
                             os.makedirs(Folder_Path)
                         file_to_be_saved = Folder_Path + '/' + 'cell_' + str(row_nr) + '_' + str(column_nr) + '.png'
-                        empty_status = check_empty_image(finalimage, lang, config_tesseract)
+                        empty_status = check_empty_image(finalimage, lang, config_tesseract, threshold_length_text)
                         if empty_status == 1:
                             cv2.imwrite(img=finalimage, filename=file_to_be_saved)
                         column_nr = column_nr + 1                 

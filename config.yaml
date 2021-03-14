@@ -1,10 +1,21 @@
+# Config File for extract_cells.py
+
+# Preprocessing config for Images
 preprocess_paramaters:
       flag: 0
 
+# Paths config fot Images
 paths:
+      # Provide the path for folder containing images. In case of of processing jpg files, change the extension.
       path_to_process: "tables/*.png"
+      # Provide Yes in case of delete existing results folder, No otherwise
+      delete_results: "Yes"
 
+# Config for tesseract for OCR recognition
 pytesseract:
       lang: 'eng'
-      config: '--psm 6'
+      # Config for tesseract. Please check documentation for tesseract for oem amd psm details and change accordingly for tradeoff btw speed and accuracy.
+      config: '--oem 3 --psm 11'
+      # No of min letters that the program that allows image to be saved (int)
+      threshold_length_text: 1
 

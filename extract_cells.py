@@ -6,6 +6,7 @@ import cv2
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import shutil
 
 # Import Local Modules
 
@@ -63,7 +64,7 @@ class TableAnalysis:
     """
     def write_results(self,finalboxes, bitnot, countcol, count_rows, filepath):
         
-        status = save_cell(finalboxes, bitnot, countcol, count_rows, filepath, lang, config_tesseract)
+        status = save_cell(finalboxes, bitnot, countcol, count_rows, filepath, lang, config_tesseract, threshold_length_text)
         if status != 1:
             return -1
         else :
@@ -81,7 +82,7 @@ return :
 """
 def config_params():
     global flag, path_to_process
-    global lang, config_tesseract
+    global lang, config_tesseract, threshold_length_text
 
     with open(path_to_config_file, "r") as ymlfile:
         cfg = yaml.safe_load(ymlfile)
@@ -90,6 +91,16 @@ def config_params():
     path_to_process = cfg["paths"]["path_to_process"]
     lang = cfg["pytesseract"]["lang"]
     config_tesseract = cfg["pytesseract"]["config"]
+    threshold_length_text = cfg["pytesseract"]["threshold_length_text"]
+    delete_results = cfg["paths"]["delete_results"]
+
+    try:
+        if delete_results.lower() == "yes":
+            shutil.rmtree('/results', ignore_errors=True)
+            print("Existing Results Folder Deleted!")
+    except:
+        print("No Existing Results Folder!")
+
 
 
 """ 
@@ -106,7 +117,6 @@ def main():
     
     for filepath in glob.glob(os.path.join(path_to_process)):
         try:
-            #if filepath.split("\\")[-1].split(".")[0] == str(5):
             finalboxes, bitnot, countcol, count_rows = table_analysis.process(filepath)
             status = table_analysis.write_results(finalboxes, bitnot, countcol, count_rows, filepath)
             if status != 1 :

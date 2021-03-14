@@ -16,11 +16,15 @@ Implementation of Cell Extractor from Images of Tables.
 
 2.  Run the command   
 
-    `pip install -r requirements.txt`  
+    `pip install -r requirements.txt` 
+
+3. Follow Point 4 for tesseract installation. Without `tesseract.exe` empty cells will also be saved by default.
+
+4. Run the command 
 
     `python extract_cells.py`
 
-3. In order to make path or any related change, please change the `config.yaml` file. 
+NOTE:  In order to make path or any related change, please change the `config.yaml` file. 
 
 
 <a name="Output"></a>
@@ -33,7 +37,7 @@ Output for Each Image is saved in a seperate folder with image name under result
 
 Example Output Format
 
-        results\0\cell_0_2.png
+        results/0/cell_0_2.png
 
 
 <a name="Packages"></a>
