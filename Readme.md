@@ -6,8 +6,9 @@ Implementation of Cell Extractor from Images of Tables.
 1. [ To Run. ](#Using)
 2. [ Output. ](#Output)
 3. [ Additional Packages. ](#Packages) 
-4. [ Future Scope. ](#Future_scope)
-5. [ Additional Information. ](#info)
+4. [ Python Version. ](#Version) 
+5. [ Future Scope. ](#Future_scope)
+6. [ Additional Information. ](#info)
 
 <a name="using"></a>
 # To Run
@@ -60,6 +61,10 @@ In order to NOT add empty cells, the program uses package called `pytesseract` f
 6. Hooray!! Now we have OCR package confirmed. 
 
 NOTE : Without `tesseract.exe` empty cells will also be saved by default.
+
+<a name="Version"></a>
+# Python Version
+The whole project was developed on Python Version `Python 3.8.1` and Pip Version `pip 21.0`.
 
 <a name="Future_scope"></a>
 # Future Scope
