@@ -1,7 +1,7 @@
 opencv_python==4.2.0.32
-matplotlib==3.2.1
 pandas==1.0.2
-numpy==1.18.1
 pytesseract==0.3.7
+numpy==1.18.1
+matplotlib==3.2.1
 Pillow==8.1.2
 PyYAML==5.4.1

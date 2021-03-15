@@ -48,9 +48,9 @@ class TableAnalysis:
         (thresh, image_vh) = detect_lines(image, image_bin)
 
         # Detect Cell on Image
-        (finalboxes, bitnot, countcol, count_rows) = detect_cells(image, image_vh)
+        (finalboxes, bitnot, countcol, count_rows, cell_detector_status) = detect_cells(image, image_vh, no_columns)
         
-        return finalboxes, bitnot, countcol, count_rows
+        return finalboxes, bitnot, countcol, count_rows, cell_detector_status
 
 
     """ 
@@ -83,6 +83,7 @@ return :
 def config_params():
     global flag, path_to_process
     global lang, config_tesseract, threshold_length_text
+    global no_columns
 
     with open(path_to_config_file, "r") as ymlfile:
         cfg = yaml.safe_load(ymlfile)
@@ -93,14 +94,14 @@ def config_params():
     config_tesseract = cfg["pytesseract"]["config"]
     threshold_length_text = cfg["pytesseract"]["threshold_length_text"]
     delete_results = cfg["paths"]["delete_results"]
+    no_columns = cfg["table_dimensions"]["no_columns"]
 
     try:
         if delete_results.lower() == "yes":
-            shutil.rmtree('/results', ignore_errors=True)
+            shutil.rmtree('results/', ignore_errors=True)
             print("Existing Results Folder Deleted!")
     except:
         print("No Existing Results Folder!")
-
 
 
 """ 
@@ -117,12 +118,15 @@ def main():
     
     for filepath in glob.glob(os.path.join(path_to_process)):
         try:
-            finalboxes, bitnot, countcol, count_rows = table_analysis.process(filepath)
-            status = table_analysis.write_results(finalboxes, bitnot, countcol, count_rows, filepath)
-            if status != 1 :
-                print("Possible Error! Kindly check Image.")
+            finalboxes, bitnot, countcol, count_rows, cell_detector_status = table_analysis.process(filepath)
+            if cell_detector_status == -1:
+                print("Possible Error due to dimension of table! Kindly check Image : ", filepath.split("\\")[-1])
             else:
-                    print("Image Processed Succesfully")
+                status = table_analysis.write_results(finalboxes, bitnot, countcol, count_rows, filepath)
+                if status != 1:
+                    print("Possible Error! Kindly check Image.")
+                else:
+                        print("Image Processed Succesfully")
         except :
             print("Image Skipped : ", filepath)         
 
@@ -130,5 +134,3 @@ def main():
 if __name__ == "__main__":
     config_params()
     main()
-
-

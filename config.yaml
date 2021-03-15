@@ -19,3 +19,7 @@ pytesseract:
       # No of min letters that the program that allows image to be saved (int)
       threshold_length_text: 1
 
+# If Number of Columns or Max Columns are known, Please Enter here for better accuracy.
+table_dimensions:
+      no_columns: 5
+

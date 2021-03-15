@@ -6,6 +6,7 @@ import numpy as np
 import os
 from PIL import Image, ImageEnhance, ImageFilter
 
+
 # Function to Check if Image/Cell is Empty
 def check_empty_image(finalimage ,lang, config_tesseract, threshold_length_text):
     try:

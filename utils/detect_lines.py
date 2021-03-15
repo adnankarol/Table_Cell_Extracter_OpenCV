@@ -18,8 +18,8 @@ def detect_lines(img, img_bin):
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 2))
 
     # Use vertical kernel to detect and save the vertical lines in a jpg
-    image_1 = cv2.erode(img_bin, ver_kernel, iterations=3)
-    vertical_lines = cv2.dilate(image_1, ver_kernel, iterations=3)
+    image_1 = cv2.erode(img_bin, ver_kernel, iterations=5)
+    vertical_lines = cv2.dilate(image_1, ver_kernel, iterations=5)
 
     # Use horizontal kernel to detect and save the horizontal lines in a jpg
     image_2 = cv2.erode(img_bin, hor_kernel, iterations=3)

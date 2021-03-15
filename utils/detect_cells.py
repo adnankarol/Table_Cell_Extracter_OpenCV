@@ -1,4 +1,4 @@
-# Module to detect Lines on an Image
+# Module to detect Cells on an Image
 import cv2
 import numpy as np
 
@@ -7,7 +7,6 @@ import numpy as np
 def sort_contours(cnts, method='left-to-right'):
 
     # initialize the reverse flag and sort index
-
     reverse = False
     i = 0
 
@@ -29,31 +28,13 @@ def sort_contours(cnts, method='left-to-right'):
     return (cnts, boundingBoxes)
 
 
-def detect_cells(image, image_vh):
-    bitxor = cv2.bitwise_xor(image, image_vh)
-    bitnot = cv2.bitwise_not(bitxor)
-
+# Function to extract cells from Image on basis of OpenCV Contour Function
+def detector(image, image_vh,contour_method, no_columns):
     # Detect contours for following box detection
-    (contours, hierarchy) = cv2.findContours(image_vh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    (contours, hierarchy) = cv2.findContours(image_vh, contour_method, cv2.CHAIN_APPROX_SIMPLE)
 
     # Sort all the contours by top to bottom.
     (contours, boundingBoxes) = sort_contours(contours, method='top-to-bottom')
-
-    # Creating a list of heights for all detected boxes
-    heights = [boundingBoxes[i][3] for i in range(len(boundingBoxes))]
-
-    # Get mean of heights
-    mean = np.mean(heights)
-
-    # Create list box to store all boxes in
-    box = []
-
-    # Get position (x,y), width and height for every contour and show the contour on image
-    for c in contours:
-        (x, y, w, h) = cv2.boundingRect(c)
-        if w < 1000 and h < 500:
-            image = cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
-            box.append([x, y, w, h])
 
     # Creating a list of heights for all detected boxes
     heights = [boundingBoxes[i][3] for i in range(len(boundingBoxes))]
@@ -93,7 +74,6 @@ def detect_cells(image, image_vh):
                 previous = box[i]
                 column.append(box[i])
     
-
     # calculating maximum number of cells
     countcol = 0
     for i in range(len(row)):
@@ -103,8 +83,14 @@ def detect_cells(image, image_vh):
     count_rows = len(row)
     countcol_cal = round(len(box)/count_rows)
     if countcol != 5:
-        countcol = countcol_cal
+            countcol = countcol_cal
 
+    # Check Possibility of Error with an additional tolerance of 1
+    if countcol > no_columns + 1:
+        cell_detector_status = -1
+    else :
+        cell_detector_status = 1
+        
     # Retrieving the center of each column
     center = [int(row[i][j][0] + row[i][j][2] / 2) for j in range(len(row[i])) if row[0]]
     center = np.array(center)
@@ -120,7 +106,26 @@ def detect_cells(image, image_vh):
             diff = abs(center - (row[i][j][0] + row[i][j][2] / 4))
             minimum = min(diff)
             indexing = list(diff).index(minimum)
-            lis[indexing].append(row[i][j])
+            try:
+                lis[indexing].append(row[i][j])
+            except:
+                pass
         finalboxes.append(lis)
+    
+    return finalboxes, countcol, count_rows, cell_detector_status
 
-    return (finalboxes, bitnot, countcol, count_rows)
+
+def detect_cells(image, image_vh, no_columns):
+    image = image
+    image_temp = image
+    no_columns = no_columns
+    image_vh = image_vh
+    bitxor = cv2.bitwise_xor(image, image_vh)
+    bitnot = cv2.bitwise_not(bitxor)
+
+    try:
+        finalboxes, countcol, count_rows, cell_detector_status = detector(image, image_vh, cv2.RETR_EXTERNAL, no_columns)
+    except:
+       finalboxes, countcol, count_rows, cell_detector_status= detector(image_temp, image_vh, cv2.RETR_TREE, no_columns)
+
+    return (finalboxes, bitnot, countcol, count_rows, cell_detector_status)
