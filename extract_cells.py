@@ -120,7 +120,7 @@ def main():
         try:
             finalboxes, bitnot, countcol, count_rows, cell_detector_status = table_analysis.process(filepath)
             if cell_detector_status == -1:
-                print("Possible Error due to dimension of table! Kindly check Image : ", filepath.split("\\")[-1])
+                print("Error due to dimension! Image Dropped : ", filepath.split("\\")[-1])
             else:
                 status = table_analysis.write_results(finalboxes, bitnot, countcol, count_rows, filepath)
                 if status != 1:
