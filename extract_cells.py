@@ -15,8 +15,6 @@ import sys
 from utils.preprocess_image import preprocess_image
 from utils.detect_lines import detect_lines
 from utils.save_cell import save_cell
-from utils.detect_cells import detect_cells
-from utils.exception_handler import exception_handler
 
 
 # Define the Path to the Config File.
@@ -73,7 +71,7 @@ class TableAnalysis:
         count_rows :Number of Rows in the Image Table.
 
     """
-    def process(self, filepath, exception):
+    def process(self, filepath):
 
         # Read The Image
         image = cv2.imread(filepath, flag)
@@ -81,14 +79,8 @@ class TableAnalysis:
         # PreProcess The Image
         (image, image_bin) = preprocess_image(image)
 
-        # Detect Lines on an Image
-        if exception == 0:
-            (thresh, image_vh) = detect_lines(image, image_bin)
-        else:
-            (thresh, image_vh) = exception_handler(image, image_bin)    
-
-        # Detect Cell on Image
-        (finalboxes, bitnot, countcol, count_rows, cell_detector_status) = detect_cells(image, image_vh, no_columns)
+        # Detect Lines and Cells on an Image
+        (finalboxes, bitnot, countcol, count_rows, cell_detector_status) = detect_lines(image, image_bin, no_columns)    
         
         return finalboxes, bitnot, countcol, count_rows, cell_detector_status
 
@@ -129,23 +121,20 @@ def main():
         print("Config Function is to be called before Class Table Analysis")
         print("System Exit...")
         sys.exit(1)
-    global exception
 
     table_analysis = TableAnalysis()
     
     for filepath in glob.glob(os.path.join(path_to_process)):
         try:
-            if filepath.split("\\")[-1].split(".")[0] == str(36):
-                finalboxes, bitnot, countcol, count_rows, cell_detector_status = table_analysis.process(filepath, 0)
+            if filepath.split("\\")[-1].split(".")[0] == str(27):
+                finalboxes, bitnot, countcol, count_rows, cell_detector_status = table_analysis.process(filepath)
                 if cell_detector_status == -1:
-                    print("Running in Exception Mode : ", filepath.split("\\")[-1])
-                    finalboxes, bitnot, countcol, count_rows, cell_detector_status = table_analysis.process(filepath, 1)
-                    status = table_analysis.write_results(finalboxes, bitnot, countcol, count_rows, filepath)
+                    print("Image Dropped due to Dimension Error ", filepath.split("\\")[-1])
                 else:
                     status = table_analysis.write_results(finalboxes, bitnot, countcol, count_rows, filepath)
-                if status != 1:
-                    print("Possible Error! Kindly check Image.")
-                else:
+                    if status != 1:
+                        print("Possible Error! Kindly check Image.")
+                    else:
                         print("Image Processed Succesfully")
         except :
             print("Image Skipped : ", filepath)         
