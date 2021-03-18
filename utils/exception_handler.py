@@ -32,6 +32,6 @@ def exception_handler(img, img_bin):
     # Eroding and thesholding the image
     img_vh = cv2.erode(~img_vh, kernel, iterations=2)
     (thresh, img_vh) = cv2.threshold(img_vh, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)   
-    # cv2.imshow("f",  cv2.resize(img_vh, (0,0), fx=0.5, fy=0.5) )
-    # cv2.waitKey(0)
+    cv2.imshow("f",  cv2.resize(img_vh, (0,0), fx=0.5, fy=0.5) )
+    cv2.waitKey(0)
     return (thresh, img_vh)
