@@ -126,7 +126,6 @@ def main():
     
     for filepath in glob.glob(os.path.join(path_to_process)):
         try:
-            if filepath.split("\\")[-1].split(".")[0] == str(27):
                 finalboxes, bitnot, countcol, count_rows, cell_detector_status = table_analysis.process(filepath)
                 if cell_detector_status == -1:
                     print("Image Dropped due to Dimension Error ", filepath.split("\\")[-1])

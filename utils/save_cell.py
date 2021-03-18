@@ -25,8 +25,6 @@ def check_empty_image(finalimage ,lang, config_tesseract, threshold_length_text,
         text = pytesseract.image_to_string(invert, lang = lang, config = config_tesseract)
         text = ''.join([i for i in text if i.isalpha()])
 
-        # print(len(text))
-        # print(text)
         if len(text) > threshold_length_text or text.lower() in special_words :
             return 1
         else :
@@ -75,9 +73,7 @@ def save_cell(finalboxes, bitnot, countcol, count_rows, filepath, lang, config_t
                                     with open("results/" + 'output.json', 'a', encoding='utf-8') as f:
                                         json.dump(data, f, ensure_ascii=False, indent=4)
                                     f.close()
-                            #print(row_nr, column_nr)
                             column_nr = column_nr + 1  
-                            #print(w,h)
 
         return 1
     except:
