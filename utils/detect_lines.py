@@ -31,7 +31,7 @@ def line_detector(img, img_bin, horizontal_kernel_len, vertical_kernal_len, hori
 
     # Eroding and thesholding the image
     img_vh = cv2.erode(~img_vh, kernel, iterations=2)
-    (thresh, img_vh) = cv2.threshold(img_vh, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)  
+    (thresh, img_vh) = cv2.threshold(img_vh, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU) 
 
     return thresh, img_vh
 
@@ -118,7 +118,7 @@ def detector(image, image_vh,contour_method, no_columns):
         if w < 1000 and h < 500:
             image = cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
             box.append([x, y, w, h])
-
+      
     # Creating two lists to define row and column in which cell is located
     row = []
     column = []
