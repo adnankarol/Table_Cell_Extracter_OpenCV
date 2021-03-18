@@ -7,6 +7,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import shutil
+import yaml
+import sys
 
 # Import Local Modules
 
@@ -14,15 +16,50 @@ from utils.preprocess_image import preprocess_image
 from utils.detect_lines import detect_lines
 from utils.save_cell import save_cell
 from utils.detect_cells import detect_cells
-import yaml
+from utils.exception_handler import exception_handler
 
 
 # Define the Path to the Config File.
 path_to_config_file = "config.yaml"
-       
+
+
+""" 
+method name : config_params
+method description : To Load the Configuration Paramaters.
+input args : 
+    None
+return :
+    None
+
+"""
+def config_params():
+    global flag, path_to_process
+    global lang, config_tesseract, threshold_length_text
+    global no_columns, special_words
+    global json_save
+
+    with open(path_to_config_file, "r") as ymlfile:
+        cfg = yaml.safe_load(ymlfile)
+    
+    flag = cfg["preprocess_paramaters"]["flag"]
+    path_to_process = cfg["paths"]["path_to_process"]
+    lang = cfg["pytesseract"]["lang"]
+    config_tesseract = cfg["pytesseract"]["config"]
+    threshold_length_text = cfg["pytesseract"]["threshold_length_text"]
+    delete_results = cfg["paths"]["delete_results"]
+    no_columns = cfg["table_dimensions"]["no_columns"]
+    json_save = cfg["json_saver"]["json_save"]
+    special_words = cfg["special"]["special_words"]
+
+    try:
+        if delete_results.lower() == "yes":
+            shutil.rmtree('results/', ignore_errors=True)
+            print("Existing Results Folder Deleted!")
+    except:
+        print("No Existing Results Folder!")
+  
 
 class TableAnalysis:
-
 
     """ 
     method name : purpose
@@ -36,7 +73,7 @@ class TableAnalysis:
         count_rows :Number of Rows in the Image Table.
 
     """
-    def process(self, filepath):
+    def process(self, filepath, exception):
 
         # Read The Image
         image = cv2.imread(filepath, flag)
@@ -45,7 +82,10 @@ class TableAnalysis:
         (image, image_bin) = preprocess_image(image)
 
         # Detect Lines on an Image
-        (thresh, image_vh) = detect_lines(image, image_bin)
+        if exception == 0:
+            (thresh, image_vh) = detect_lines(image, image_bin)
+        else:
+            (thresh, image_vh) = exception_handler(image, image_bin)    
 
         # Detect Cell on Image
         (finalboxes, bitnot, countcol, count_rows, cell_detector_status) = detect_cells(image, image_vh, no_columns)
@@ -64,44 +104,11 @@ class TableAnalysis:
     """
     def write_results(self,finalboxes, bitnot, countcol, count_rows, filepath):
         
-        status = save_cell(finalboxes, bitnot, countcol, count_rows, filepath, lang, config_tesseract, threshold_length_text)
+        status = save_cell(finalboxes, bitnot, countcol, count_rows, filepath, lang, config_tesseract, threshold_length_text, json_save, special_words)
         if status != 1:
             return -1
         else :
             return 1
-
-
-""" 
-method name : config_params
-method description : To Load the Configuration Paramaters.
-input args : 
-    None
-return :
-    None
-
-"""
-def config_params():
-    global flag, path_to_process
-    global lang, config_tesseract, threshold_length_text
-    global no_columns
-
-    with open(path_to_config_file, "r") as ymlfile:
-        cfg = yaml.safe_load(ymlfile)
-    
-    flag = cfg["preprocess_paramaters"]["flag"]
-    path_to_process = cfg["paths"]["path_to_process"]
-    lang = cfg["pytesseract"]["lang"]
-    config_tesseract = cfg["pytesseract"]["config"]
-    threshold_length_text = cfg["pytesseract"]["threshold_length_text"]
-    delete_results = cfg["paths"]["delete_results"]
-    no_columns = cfg["table_dimensions"]["no_columns"]
-
-    try:
-        if delete_results.lower() == "yes":
-            shutil.rmtree('results/', ignore_errors=True)
-            print("Existing Results Folder Deleted!")
-    except:
-        print("No Existing Results Folder!")
 
 
 """ 
@@ -114,15 +121,28 @@ return :
 
 """
 def main():
+
+    # Check if Config variables are loaded
+    try :
+        path_to_process
+    except:
+        print("Config Function is to be called before Class Table Analysis")
+        print("System Exit...")
+        sys.exit(1)
+    global exception
+
     table_analysis = TableAnalysis()
     
     for filepath in glob.glob(os.path.join(path_to_process)):
         try:
-            finalboxes, bitnot, countcol, count_rows, cell_detector_status = table_analysis.process(filepath)
-            if cell_detector_status == -1:
-                print("Error due to dimension! Image Dropped : ", filepath.split("\\")[-1])
-            else:
-                status = table_analysis.write_results(finalboxes, bitnot, countcol, count_rows, filepath)
+            #if filepath.split("\\")[-1].split(".")[0] == str(37):
+                finalboxes, bitnot, countcol, count_rows, cell_detector_status = table_analysis.process(filepath, 0)
+                if cell_detector_status == -1:
+                    print("Running in Exception Mode : ", filepath.split("\\")[-1])
+                    finalboxes, bitnot, countcol, count_rows, cell_detector_status = table_analysis.process(filepath, 1)
+                    status = table_analysis.write_results(finalboxes, bitnot, countcol, count_rows, filepath)
+                else:
+                    status = table_analysis.write_results(finalboxes, bitnot, countcol, count_rows, filepath)
                 if status != 1:
                     print("Possible Error! Kindly check Image.")
                 else:

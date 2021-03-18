@@ -17,9 +17,16 @@ pytesseract:
       # Config for tesseract. Please check documentation for tesseract for oem amd psm details and change accordingly for tradeoff btw speed and accuracy.
       config: '--oem 3 --psm 11'
       # No of min letters that the program that allows image to be saved (int)
-      threshold_length_text: 1
+      threshold_length_text: 2
 
 # If Number of Columns or Max Columns are known, Please Enter here for better accuracy.
 table_dimensions:
       no_columns: 5
 
+# Would you want to save json file with image name and cordinates : Yes or No.
+json_saver:
+      json_save: "Yes"
+
+# Some Special Words that can can cause problems and can be ignored by pytesseract.
+special:
+      special_words: ["ja"]

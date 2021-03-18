@@ -1,15 +1,16 @@
-# Module to detect Lines on an Image
+# Module to Handle Exception Cases
 import cv2
 import numpy as np
 
 
-def detect_lines(img, img_bin):
+def exception_handler(img, img_bin):
 
     # Length(width) of kernel as 100th of total width
-    kernel_len = np.array(img).shape[1] // 100
+    kernel_len = np.array(img).shape[1] // 20
+    kernel_len_2 = np.array(img).shape[0] // 11
 
     # Defining a vertical kernel to detect all vertical lines of image
-    ver_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, kernel_len))
+    ver_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, kernel_len_2))
 
     # Defining a horizontal kernel to detect all horizontal lines of image
     hor_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_len, 1))
@@ -33,5 +34,4 @@ def detect_lines(img, img_bin):
     (thresh, img_vh) = cv2.threshold(img_vh, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)   
     # cv2.imshow("f",  cv2.resize(img_vh, (0,0), fx=0.5, fy=0.5) )
     # cv2.waitKey(0)
-    # sys.exit(1)
     return (thresh, img_vh)

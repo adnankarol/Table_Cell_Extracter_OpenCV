@@ -82,11 +82,11 @@ def detector(image, image_vh,contour_method, no_columns):
             countcol = countcol
     count_rows = len(row)
     countcol_cal = round(len(box)/count_rows)
-    if countcol != 5:
+    if countcol != no_columns:
             countcol = countcol_cal
 
     # Check Possibility of Error with an additional tolerance of 1
-    if countcol > no_columns + 1:
+    if countcol > no_columns :
         cell_detector_status = -1
     else :
         cell_detector_status = 1

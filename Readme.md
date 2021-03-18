@@ -30,6 +30,8 @@ NOTE:  In order to make path or any related change, please change the `config.ya
 
 <a name="Output"></a>
 # Output
+
+## Output Cells Images
 Output for Each Image is saved in a seperate folder with image name under results folder in the format as given below.
 
 
@@ -40,6 +42,8 @@ Example Output Format
 
         results/0/cell_0_2.png
 
+## Json Output
+There is also a `output.json` file that is stored under `results` folder that stores each cell cordinate in format (x, y, w, h) along with the image name.
 
 <a name="Packages"></a>
 # Additional Packages
