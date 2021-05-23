@@ -1,4 +1,4 @@
-# Coding Round for Just Add AI GmbH
+# Coding Round for Position of AI Engineer
 Implementation of Cell Extractor from Images of Tables.
 
 
